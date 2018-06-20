@@ -11,8 +11,11 @@ var timestamp = new Date();
 var rootChannel = "";
 var channels = {};
 var users = {};
+var coordinates = {};
+var participants = {}; 
 
 // config
+participants[rootChannel] = {};
 app.set('port', 3000);
 app.use( bodyParser.json() );                         // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({ extended: true }));   // to support URL-encoded bodies
@@ -26,12 +29,16 @@ io.on('connection', function(socket){
   socket.join(rootChannel);
   users[socket.id] = "";
   channels[socket.id] = rootChannel;
+  addParticipantToChannel(socket, rootChannel);
+
   console.log('[' + timestamp.toUTCString() + '] system-message: ' + getUserInfo(socket.id) + ' connected');
   io.emit('system-message', { for: 'everyone', user: getUserInfo(socket.id), message: getUserInfo(socket.id) + " connected", timestamp: timestamp.toUTCString() });
 
   // handle disconnection
   socket.on('disconnect', function(){
     updateTimestamp();
+    removeParticipantFromChannel(socket);
+    console.log(participants);
     console.log('[' + timestamp.toUTCString() + '] system-message: ' + getUserInfo(socket.id) + ' disconnected');
     io.emit('system-message', { for: 'everyone', user: getUserInfo(socket.id), message: getUserInfo(socket.id) + " disconnected", timestamp: timestamp.toUTCString() });
   });
@@ -46,17 +53,19 @@ io.on('connection', function(socket){
   // handle incoming gps coordinates 
   socket.on('system-gps', function(data){
     updateTimestamp();
-    console.log('[' + timestamp.toUTCString() + '] system-gps: ' + data);
+    coordinates[socket.id] = data.coordinates;
+    console.log('[' + timestamp.toUTCString() + '] system-gps: @' + data.channel + " [" + data.coordinates.lat + " " + data.coordinates.lng + "]");
   });
 
   // handle channel change 
   socket.on('channel-join', function(data){
     updateTimestamp();
+    removeParticipantFromChannel(socket);
     console.log('[' + timestamp.toUTCString() + '] channel-join: ' + data);
     io.emit('system-message', { for: 'everyone', user: getUserInfo(socket.id), message: "user joined channel " + String(data), timestamp: timestamp.toUTCString() });
-    socket.leave(channels[socket.id]);
-    channels[socket.id] = String(data);
-    socket.join(String(data));
+    addParticipantToChannel(socket, String(data));
+    listParticipants(String(data));
+    
   });
 
   // handle alias change 
@@ -94,4 +103,32 @@ function getUserInfo(socketID){
   } else {
     return users[socketID];
   }
+}
+
+function addParticipantToChannel(socket, channelString){
+  if(participants[channelString] == null){
+    participants[channelString] = {};
+  } 
+  participants[channelString][socket.id] = true;
+  channels[socket.id] = channelString;
+  socket.join(channelString);
+  console.log("adding participant to channel: " + channelString);
+}
+
+function removeParticipantFromChannel(socket){
+  console.log("removing participant from channel: " + channels[socket.id]);
+  delete participants[channels[socket.id]][socket.id];
+  socket.leave(channels[socket.id]);
+}
+
+function listParticipants(channelString){
+  console.log(" ");
+  if( channelString == rootChannel ) {
+    console.log("--- list of participants in the lobby");  
+  } else {
+    console.log("--- list of participants @" + channelString);
+  }
+  console.log(participants[channelString]);
+  console.log("--- --- --- ---- --- --- ---");
+  console.log(" ");
 }

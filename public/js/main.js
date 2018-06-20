@@ -6,7 +6,7 @@ var messageLog;
 
 window.onload = function(e){ 
   console.log("window.onload", e, Date.now() ,window.tdiff);
-  loadDoc('https://ipinfo.io/json', XHTTPResultHelper); 
+  retrieveCoordinatesFromIP();
   chatInputForm = document.getElementById("chatInputForm");
   aliasInput = document.getElementById("aliasInput");
   channelInput = document.getElementById("channelInput");
@@ -37,6 +37,7 @@ function XHTTPResultHelper(xhttp) {
     var resultLng = String(locationSearchResult).split(',')[1];
     mapInitiationCenterCoordinates = {lat: Number(resultLat), lng: Number(resultLng)};
     initMapOnDocLoad();
+    sendCoordinatesFromIP();
     console.log(resultLng + " " + resultLat);
   } else {
     console.log("No matches found for location element");
@@ -54,6 +55,10 @@ function initMapOnDocLoad(){
     center: mapInitiationCenterCoordinates,
     zoom: 13
   });
+}
+
+function retrieveCoordinatesFromIP(){
+  loadDoc('https://ipinfo.io/json', XHTTPResultHelper); 
 }
 
 // toggle map broadcast

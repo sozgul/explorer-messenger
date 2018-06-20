@@ -9,6 +9,7 @@ function initiateChat(){
   socket.on("chat-message", function(data){
     chatMessageHandler(data);
   });
+
 }
 
 function messageHandler(data){
@@ -57,13 +58,14 @@ function chatMessageHandler(data){
 }
 
 function handleAliasChange(){
-  console.log("channel alias to [ " + aliasInput.value + " ]");
+  console.log("changed alias to [ " + aliasInput.value + " ]");
   socket.emit("alias-change", String(aliasInput.value));
 }
 
 function handleChannelChange(){
   console.log("channel changed to [ " + channelInput.value + " ]");
   socket.emit("channel-join", String(channelInput.value));
+  sendCoordinatesFromIP();
 }
 
 function handleInputFormSubmit(){
@@ -71,4 +73,9 @@ function handleInputFormSubmit(){
   socket.emit('chat-message', {message: String(chatInputForm.elements[0].value), channel: channelInput.value});
   chatInputForm.elements[0].value = "";
   return false;
+}
+
+function sendCoordinatesFromIP(){
+  console.log("sending GPS coordinates to server");
+  socket.emit('system-gps', {coordinates: {lat: mapInitiationCenterCoordinates.lat, lng: mapInitiationCenterCoordinates.lng}, channel: channelInput.value });
 }
