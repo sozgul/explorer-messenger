@@ -1,7 +1,7 @@
 {
-  "name": "milestone",
+  "name": "explorer-messenger",
   "version": "1.0.0",
-  "description": "map application",
+  "description": "explorer application message broker",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
