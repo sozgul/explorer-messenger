@@ -39,6 +39,14 @@ function XHTTPResultHelper(xhttp) {
     initMapOnDocLoad();
     sendCoordinatesFromIP();
     console.log(resultLng + " " + resultLat);
+
+    var marker = new google.maps.Marker({
+      position: mapInitiationCenterCoordinates,
+      title:"IP location"
+    });
+    
+    // To add the marker to the map, call setMap();
+    marker.setMap(map);
   } else {
     console.log("No matches found for location element");
   }
