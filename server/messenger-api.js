@@ -4,7 +4,7 @@ const messengerApi = express();
 const bodyParser = require('body-parser');
 const http = require('http').Server(messengerApi);
 const io = require('socket.io')(http);
-const {logger} = require('./logger');
+const {logger, expressLogger} = require('./logger');
 
 var rootChannel = 'lobby';
 var channels = {};
@@ -14,6 +14,13 @@ var participants = {};
 messengerApi.use(bodyParser.json());
 messengerApi.use(bodyParser.urlencoded({ extended: true }));   // to support URL-encoded bodies
 messengerApi.use(express.static(path.join(__dirname, 'public')));
+messengerApi.use(expressLogger);
+
+messengerApi.use(function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
+});
 
 // socket.io connections
 io.on('connection', function(socket){
@@ -69,11 +76,6 @@ io.on('connection', function(socket){
 
 });
 
-module.exports = {
-  messengerApi: messengerApi,
-  http: http
-};
-
 // get current alias by socked ID
 function getUserInfo(socketID){
   if(users[socketID] == ''){
@@ -105,3 +107,6 @@ function listParticipants(channelString){
   logger.info(participants[channelString]);
   
 }
+
+module.exports = http;
+  
