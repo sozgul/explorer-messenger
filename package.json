@@ -1,15 +1,38 @@
 {
   "name": "explorer-messenger",
-  "version": "1.0.0",
-  "description": "explorer application message broker",
+  "version": "0.0.0",
+  "description": "messenger service for Explorer project",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server/index.js",
+    "test": "jest",
+    "lint": "./node_modules/.bin/eslint **/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/grese/explorer-messenger.git"
   },
   "author": "",
-  "license": "MIT",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/grese/explorer-messenger/issues"
+  },
+  "homepage": "https://github.com/grese/explorer-messenger#readme",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "eslint": "^4.19.1",
+    "eslint-plugin-jest": "^21.17.0",
+    "jest": "^23.1.0",
+    "superagent": "^3.8.3",
+    "supertest": "^3.1.0"
+  },
   "dependencies": {
-    "express": "latest",
-    "socket.io": "latest"
+    "dotenv": "^6.0.0",
+    "express": "^4.16.3",
+    "express-winston": "^2.5.1",
+    "path": "^0.12.7",
+    "socket.io": "^2.1.1",
+    "winston": "^2.4.3"
   }
 }

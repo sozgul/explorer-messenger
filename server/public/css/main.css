@@ -196,6 +196,16 @@
   font-size: 20px;
 }
 
+
+#longitudeInput {
+  width: 100px;
+}
+
+#latitudeInput {
+  left: 100px;
+  width: 100px;
+}
+
 #messageLog {
   left: 0;
 }
